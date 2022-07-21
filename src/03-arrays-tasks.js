@@ -613,7 +613,12 @@ function getElementByIndexes(arr, indexes) {
  */
 function swapHeadAndTail(arr) {
   const half = Math.floor(arr.length / 2);
-  return;
+  let result = arr.slice(0, half + 1);
+  if (arr.length % 2 === 1) {
+    result = result.concat(arr[half + 1]);
+  }
+
+  return result.concat(arr.slice(arr.length - 1 - half));
 }
 
 
