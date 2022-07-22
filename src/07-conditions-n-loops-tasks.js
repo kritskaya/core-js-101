@@ -329,8 +329,10 @@ function isCreditCardNumber(ccn) {
  *   10000 ( 1+0+0+0+0 = 1 ) => 1
  *   165536 (1+6+5+5+3+6 = 26,  2+6 = 8) => 8
  */
-function getDigitalRoot(/* num */) {
-  throw new Error('Not implemented');
+function getDigitalRoot(num) {
+  if (num < 10) return num;
+  const next = num.toString().split('').reduce((acc, i) => acc + Number(i), 0);
+  return getDigitalRoot(next);
 }
 
 
@@ -355,8 +357,36 @@ function getDigitalRoot(/* num */) {
  *   '{)' = false
  *   '{[(<{[]}>)]}' = true
  */
-function isBracketsBalanced(/* str */) {
-  throw new Error('Not implemented');
+function isBracketsBalanced(str) {
+  const bracketsConfig = [['(', ')'], ['[', ']'], ['{', '}'], ['<', '>']];
+
+  const brackets = [];
+
+  for (let i = 0; i < str.length; i += 1) {
+    for (let j = 0; j < bracketsConfig.length; j += 1) {
+      const start = bracketsConfig[j][0];
+      const end = bracketsConfig[j][1];
+
+      if (str[i] === start) {
+        if (str[i] === end && brackets[brackets.length - 1] === end) {
+          brackets.pop();
+        } else {
+          brackets.push(start);
+        }
+        break;
+      } else if (str[i] === end) {
+        if (brackets.length === 0) return false;
+        if (brackets[brackets.length - 1] === start) {
+          brackets.pop();
+          break;
+        }
+      }
+    }
+  }
+
+  if (brackets.length > 0) return false;
+
+  return true;
 }
 
 
@@ -380,8 +410,8 @@ function isBracketsBalanced(/* str */) {
  *    365, 4  => '11231'
  *    365, 10 => '365'
  */
-function toNaryString(/* num, n */) {
-  throw new Error('Not implemented');
+function toNaryString(num, n) {
+  return num.toString(n);
 }
 
 
@@ -397,8 +427,32 @@ function toNaryString(/* num, n */) {
  *   ['/web/assets/style.css', '/.bin/mocha',  '/read.me'] => '/'
  *   ['/web/favicon.ico', '/web-scripts/dump', '/verbalizer/logs'] => '/'
  */
-function getCommonDirectoryPath(/* pathes */) {
-  throw new Error('Not implemented');
+function getCommonDirectoryPath(pathes) {
+  let template = '';
+
+  for (let i = 0; i < pathes[0].length; i += 1) {
+    template = pathes[0].slice(0, i + 1);
+    let same = true;
+    for (let j = 1; j < pathes.length; j += 1) {
+      if (!pathes[j].startsWith(template)) {
+        same = false;
+        break;
+      }
+    }
+    if (!same) {
+      if (template.length > 1) {
+        template = pathes[0].slice(0, i);
+      } else {
+        template = '';
+      }
+      break;
+    }
+  }
+
+  const lastSlash = template.lastIndexOf('/');
+  if (lastSlash > -1) template = template.slice(0, lastSlash + 1);
+
+  return template;
 }
 
 
@@ -420,8 +474,20 @@ function getCommonDirectoryPath(/* pathes */) {
  *                         [ 6 ]]
  *
  */
-function getMatrixProduct(/* m1, m2 */) {
-  throw new Error('Not implemented');
+function getMatrixProduct(m1, m2) {
+  const multi = [];
+  for (let i = 0; i < m1.length; i += 1) {
+    const row = [];
+    for (let j = 0; j < m2[0].length; j += 1) {
+      let sum = 0;
+      for (let k = 0; k < m2.length; k += 1) {
+        sum += m1[i][k] * m2[k][j];
+      }
+      row.push(sum);
+    }
+    multi.push(row);
+  }
+  return multi;
 }
 
 
@@ -455,8 +521,58 @@ function getMatrixProduct(/* m1, m2 */) {
  *    [    ,   ,    ]]
  *
  */
-function evaluateTicTacToePosition(/* position */) {
-  throw new Error('Not implemented');
+function evaluateTicTacToePosition(position) {
+  const players = ['0', 'X'];
+  let winner;
+  let win;
+
+  for (let p = 0; p < players.length; p += 1) {
+    const player = players[p];
+
+    for (let i = 0; i < position.length; i += 1) {
+      win = true;
+      for (let j = 0; j < position.length; j += 1) {
+        if (position[i][j] !== player) {
+          win = false;
+          break;
+        }
+      }
+      if (win) {
+        return player;
+      }
+    }
+
+    for (let j = 0; j < position[0].length; j += 1) {
+      win = true;
+      for (let i = 0; i < position.length; i += 1) {
+        if (position[i][j] !== player) {
+          win = false;
+          break;
+        }
+      }
+      if (win) return player;
+    }
+
+    win = true;
+    for (let i = 0; i < position.length; i += 1) {
+      if (position[i][i] !== player) {
+        win = false;
+        break;
+      }
+    }
+    if (win) return player;
+
+    win = true;
+    for (let i = 0; i < position.length; i += 1) {
+      if (position[i][position.length - 1 - i] !== player) {
+        win = false;
+        break;
+      }
+    }
+    if (win) return player;
+  }
+
+  return winner;
 }
 
 
