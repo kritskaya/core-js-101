@@ -23,8 +23,11 @@
  *   getComposition(Math.sin, Math.asin)(x) => Math.sin(Math.asin(x))
  *
  */
-function getComposition(/* f, g */) {
-  throw new Error('Not implemented');
+function getComposition(f, g) {
+  return function (x) {
+    const res = g(x);
+    return f(res);
+  };
 }
 
 
@@ -44,8 +47,10 @@ function getComposition(/* f, g */) {
  *   power05(16) => 4
  *
  */
-function getPowerFunction(/* exponent */) {
-  throw new Error('Not implemented');
+function getPowerFunction(exponent) {
+  return function (m) {
+    return m ** exponent;
+  };
 }
 
 
@@ -62,8 +67,16 @@ function getPowerFunction(/* exponent */) {
  *   getPolynom(8)     => y = 8
  *   getPolynom()      => null
  */
-function getPolynom() {
-  throw new Error('Not implemented');
+function getPolynom(...args) {
+  const a = args[0] || 0;
+  const b = args[1] || 0;
+  const c = args[2] || 0;
+
+  console.log(args, a, b, c);
+
+  return function (x) {
+    return a * x ** 2 + b * x + c;
+  };
 }
 
 
