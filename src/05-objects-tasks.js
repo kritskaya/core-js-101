@@ -125,36 +125,96 @@ function fromJSON(proto, json) {
  *  For more examples see unit tests.
  */
 
+
+class BaseElement {
+  constructor(value) {
+    this.value = value;
+  }
+
+  element(value) {
+    this.value = `${this.value}${value}`;
+
+    return this;
+  }
+
+  id(value) {
+    this.value = `${this.value}#${value}`;
+    const match = this.value.indexOf('#');
+    if (!match) {
+      throw new Error('Element, id and pseudo-element should not occur more then one time inside the selector');
+    }
+    return this;
+  }
+
+  class(value) {
+    this.value = `${this.value}.${value}`;
+    return this;
+  }
+
+  attr(value) {
+    this.value = `${this.value}[${value}]`;
+    return this;
+  }
+
+  pseudoClass(value) {
+    this.value = `${this.value}:${value}`;
+    return this;
+  }
+
+  pseudoElement(value) {
+    this.value = `${this.value}::${value}`;
+    const match = this.value.indexOf('::');
+    if (!match) {
+      throw new Error('Element, id and pseudo-element should not occur more then one time inside the selector');
+    }
+    return this;
+  }
+
+  stringify() {
+    console.log(this.value);
+    return this.value;
+  }
+}
+
 const cssSelectorBuilder = {
-  element(/* value */) {
-    throw new Error('Not implemented');
+  str: '',
+
+  element(value) {
+    return new BaseElement(`${this.str}${value}`);
   },
 
-  id(/* value */) {
-    throw new Error('Not implemented');
+  id(value) {
+    // if (this.ids.has(value)) {
+    //   throw Error('');
+    // }
+
+    return new BaseElement(`${this.str}#${value}`);
   },
 
-  class(/* value */) {
-    throw new Error('Not implemented');
+  class(value) {
+    return new BaseElement(`${this.str}.${value}`);
   },
 
-  attr(/* value */) {
-    throw new Error('Not implemented');
+  attr(value) {
+    return new BaseElement(`${this.str}[${value}]`);
   },
 
-  pseudoClass(/* value */) {
-    throw new Error('Not implemented');
+  pseudoClass(value) {
+    return new BaseElement(`${this.str}:${value}`);
   },
 
-  pseudoElement(/* value */) {
-    throw new Error('Not implemented');
+  pseudoElement(value) {
+    // if (this.pseudos.has(value)) {
+    //   throw Error('');
+    // }
+
+    return new BaseElement(`${this.str}::${value}`);
   },
 
-  combine(/* selector1, combinator, selector2 */) {
-    throw new Error('Not implemented');
+  combine(selector1, combinator, selector2) {
+    return new BaseElement(`${selector1.stringify()} ${combinator} ${selector2.stringify()}`);
   },
 };
-
 
 module.exports = {
   Rectangle,
