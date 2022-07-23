@@ -131,84 +131,101 @@ class BaseElement {
     this.value = value;
   }
 
-  element(value) {
-    this.value = `${this.value}${value}`;
+  getValue() {
+    return this.value;
+  }
 
+  element(value) {
+    const match1 = this.value.match(/^[a-z]/);
+    if (match1) {
+      throw new Error('Element, id and pseudo-element should not occur more then one time inside the selector');
+    }
+
+    this.orderCheck('[#.[\\]:]');
+
+    this.value = `${this.value}${value}`;
     return this;
   }
 
   id(value) {
+    this.moreThanOneCheck('#');
+    this.orderCheck('[.[\\]:]');
+
     this.value = `${this.value}#${value}`;
-    const match = this.value.indexOf('#');
-    if (!match) {
-      throw new Error('Element, id and pseudo-element should not occur more then one time inside the selector');
-    }
     return this;
   }
 
   class(value) {
+    this.orderCheck('[[\\]:]');
+
     this.value = `${this.value}.${value}`;
     return this;
   }
 
   attr(value) {
+    this.orderCheck('[:]');
+
     this.value = `${this.value}[${value}]`;
     return this;
   }
 
   pseudoClass(value) {
+    this.orderCheck('::');
+
     this.value = `${this.value}:${value}`;
     return this;
   }
 
   pseudoElement(value) {
+    this.moreThanOneCheck('::');
+
     this.value = `${this.value}::${value}`;
-    const match = this.value.indexOf('::');
-    if (!match) {
-      throw new Error('Element, id and pseudo-element should not occur more then one time inside the selector');
-    }
     return this;
   }
 
+  moreThanOneCheck(pattern) {
+    const match = this.value.indexOf(pattern);
+    if (match > -1) {
+      throw new Error('Element, id and pseudo-element should not occur more then one time inside the selector');
+    }
+  }
+
+  orderCheck(pattern) {
+    const match = this.value.match(new RegExp(pattern));
+    if (match) {
+      throw new Error('Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element"');
+    }
+  }
+
   stringify() {
-    console.log(this.value);
     return this.value;
   }
 }
 
 const cssSelectorBuilder = {
-  str: '',
 
   element(value) {
-    return new BaseElement(`${this.str}${value}`);
+    return new BaseElement(`${value}`);
   },
 
   id(value) {
-    // if (this.ids.has(value)) {
-    //   throw Error('');
-    // }
-
-    return new BaseElement(`${this.str}#${value}`);
+    return new BaseElement(`#${value}`);
   },
 
   class(value) {
-    return new BaseElement(`${this.str}.${value}`);
+    return new BaseElement(`.${value}`);
   },
 
   attr(value) {
-    return new BaseElement(`${this.str}[${value}]`);
+    return new BaseElement(`[${value}]`);
   },
 
   pseudoClass(value) {
-    return new BaseElement(`${this.str}:${value}`);
+    return new BaseElement(`:${value}`);
   },
 
   pseudoElement(value) {
-    // if (this.pseudos.has(value)) {
-    //   throw Error('');
-    // }
-
-    return new BaseElement(`${this.str}::${value}`);
+    return new BaseElement(`::${value}`);
   },
 
   combine(selector1, combinator, selector2) {

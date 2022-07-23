@@ -24,7 +24,7 @@
  *
  */
 function getComposition(f, g) {
-  return function (x) {
+  return function func(x) {
     const res = g(x);
     return f(res);
   };
@@ -48,7 +48,7 @@ function getComposition(f, g) {
  *
  */
 function getPowerFunction(exponent) {
-  return function (m) {
+  return function f(m) {
     return m ** exponent;
   };
 }
@@ -73,7 +73,7 @@ function getPolynom(...args) {
   const b = arr[1] || 0;
   const a = arr[2] || 0;
 
-  return function (x) {
+  return function f(x) {
     return a * x ** 2 + b * x + c;
   };
 }
@@ -95,7 +95,7 @@ function getPolynom(...args) {
  */
 function memoize(func) {
   let cached;
-  return function () {
+  return function f() {
     if (!cached) {
       cached = func();
     }
@@ -120,7 +120,7 @@ function memoize(func) {
  * retryer() => 2
  */
 function retry(func, attempts) {
-  return function () {
+  return function f() {
     try {
       return func();
     } catch (e) {
@@ -153,8 +153,24 @@ function retry(func, attempts) {
  * cos(3.141592653589793) ends
  *
  */
-function logger(/* func, logFunc */) {
-  throw new Error('Not implemented');
+function logger(func, logFunc) {
+  return function f(...args) {
+    const { name } = func;
+
+    const params = args.length > 1 ? args.reduce((acc, arg) => {
+      if (Array.isArray(arg)) {
+        return `${acc}[${arg.map((item) => (typeof (item) === 'string' ? `"${item}"` : item)).join(',')}]`;
+      }
+      return acc + (typeof (arg) === 'string' ? `,"${arg}"` : `,${arg}`);
+    }, '') : args;
+
+    const start = `${name}(${params}) starts`;
+    const end = `${name}(${params}) ends`;
+    logFunc(start);
+    const result = func(...args);
+    logFunc(end);
+    return result;
+  };
 }
 
 
@@ -171,8 +187,10 @@ function logger(/* func, logFunc */) {
  *   partialUsingArguments(fn, 'a','b','c')('d') => 'abcd'
  *   partialUsingArguments(fn, 'a','b','c','d')() => 'abcd'
  */
-function partialUsingArguments(/* fn, ...args1 */) {
-  throw new Error('Not implemented');
+function partialUsingArguments(fn, ...args) {
+  return function partial(...params) {
+    return fn(...args, ...params);
+  };
 }
 
 
@@ -195,7 +213,7 @@ function partialUsingArguments(/* fn, ...args1 */) {
  */
 function getIdGeneratorFunction(startFrom) {
   let counter = startFrom - 1;
-  return function () {
+  return function f() {
     counter += 1;
     return counter;
   };
