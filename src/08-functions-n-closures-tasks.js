@@ -68,11 +68,10 @@ function getPowerFunction(exponent) {
  *   getPolynom()      => null
  */
 function getPolynom(...args) {
-  const a = args[0] || 0;
-  const b = args[1] || 0;
-  const c = args[2] || 0;
-
-  console.log(args, a, b, c);
+  const arr = args.reverse();
+  const c = arr[0] || 0;
+  const b = arr[1] || 0;
+  const a = arr[2] || 0;
 
   return function (x) {
     return a * x ** 2 + b * x + c;
@@ -94,8 +93,14 @@ function getPolynom(...args) {
  *   ...
  *   memoizer() => the same random number  (next run, returns the previous cached result)
  */
-function memoize(/* func */) {
-  throw new Error('Not implemented');
+function memoize(func) {
+  let cached;
+  return function () {
+    if (!cached) {
+      cached = func();
+    }
+    return cached;
+  };
 }
 
 
@@ -114,8 +119,14 @@ function memoize(/* func */) {
  * }, 2);
  * retryer() => 2
  */
-function retry(/* func, attempts */) {
-  throw new Error('Not implemented');
+function retry(func, attempts) {
+  return function () {
+    try {
+      return func();
+    } catch (e) {
+      return retry(func, attempts - 1)();
+    }
+  };
 }
 
 
@@ -182,8 +193,12 @@ function partialUsingArguments(/* fn, ...args1 */) {
  *   getId4() => 7
  *   getId10() => 11
  */
-function getIdGeneratorFunction(/* startFrom */) {
-  throw new Error('Not implemented');
+function getIdGeneratorFunction(startFrom) {
+  let counter = startFrom - 1;
+  return function () {
+    counter += 1;
+    return counter;
+  };
 }
 
 
