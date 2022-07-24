@@ -35,18 +35,7 @@ function parseDataFromRfc2822(value) {
  *    '2016-01-19T08:07:37Z' => Date()
  */
 function parseDataFromIso8601(value) {
-  const firstHyphen = value.indexOf('-');
-  const year = value.slice(0, firstHyphen);
-  const secondHyphen = value.indexOf('-', firstHyphen + 1);
-  const month = value.slice(firstHyphen + 1, secondHyphen);
-  const tPos = value.indexOf('T');
-  const day = value.slice(secondHyphen + 1, tPos);
-  const firstColon = value.indexOf(':');
-  const hour = value.slice(tPos + 1, firstColon);
-  const secondColon = value.indexOf(':', firstColon + 1);
-  const min = value.slice(firstColon + 1, secondColon);
-  const sec = value.slice(secondColon + 1, secondColon + 3);
-  return new Date(+year, +month - 1, +day, +hour + 3, +min, +sec, 0);
+  return Date.parse(value);
 }
 
 
